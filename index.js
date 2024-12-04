@@ -8,6 +8,7 @@ import fastifyWs from "@fastify/websocket";
 dotenv.config();
 
 import { SYSTEM_MESSAGE } from "./constants.js";
+import { generateOrder } from "./openai.client.js";
 
 // Retrieve the OpenAI API key from environment variables.
 const { OPENAI_API_KEY } = process.env;
@@ -234,7 +235,7 @@ fastify.register(async (fastify) => {
           case "conversation.item.input_audio_transcription.completed":
             const { transcript } = message;
             console.log(`User input transcript: ${transcript}`);
-            transcripts.push(`User: ${transcript}`);
+            transcripts.push(`Customer: ${transcript}`);
             break;
           /*case "response.audio_transcript.done":
             console.log(`Audio transcription done: ${message.transcript}`);
@@ -248,7 +249,7 @@ fastify.register(async (fastify) => {
             ) {
               const { transcript } = message.response.output[0].content[0];
               console.log(`Server audio transcript: ${transcript}`);
-              transcripts.push(`System: ${transcript}`);
+              transcripts.push(`Restaurant: ${transcript}`);
             }
             break;
         }
@@ -263,7 +264,7 @@ fastify.register(async (fastify) => {
     });
 
     // Handle incoming messages from Twilio
-    connection.on("message", (message) => {
+    connection.on("message", async (message) => {
       try {
         const data = JSON.parse(message);
 
@@ -298,6 +299,8 @@ fastify.register(async (fastify) => {
           case "stop":
             console.log("Received completed:", data.event);
             console.log(`Full transcripts:\n${transcripts.join("\n")}`);
+            const order = await generateOrder(transcripts);
+            console.log("Order:", order);
             break;
           default:
             console.log("Received non-media event:", data.event);
