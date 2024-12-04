@@ -402,6 +402,15 @@ fastify.register(async (fastify) => {
           case "response.audio_transcript.done":
             console.log(`Audio transcript: ${message.transcript}`);
             break;
+          case "response.done":
+            console.log(
+              `Response when conversation ends: ${JSON.stringify(
+                message,
+                null,
+                2
+              )}`
+            );
+            break;
         }
       } catch (error) {
         console.error(
