@@ -7,7 +7,7 @@ import fastifyWs from "@fastify/websocket";
 // Load environment variables from .env file
 dotenv.config();
 
-import { SYSTEM_MESSAGE } from "./constants";
+import { SYSTEM_MESSAGE } from "./constants.js";
 
 // Retrieve the OpenAI API key from environment variables.
 const { OPENAI_API_KEY } = process.env;
