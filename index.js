@@ -403,16 +403,16 @@ fastify.register(async (fastify) => {
             console.log(`Audio transcript: ${message.transcript}`);
             break;
           case "response.done":
-            console.log(
-              `Transcript: ${message.response.output[0].content[0].transcript}`
-            );
             /*console.log(
+              `Transcript: ${message.response.output[0].content[0].transcript}`
+            );*/
+            console.log(
               `Response when conversation ends: ${JSON.stringify(
-                message,
+                message.response.output[0],
                 null,
                 2
               )}`
-            );*/
+            );
             break;
         }
       } catch (error) {
