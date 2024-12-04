@@ -404,12 +404,15 @@ fastify.register(async (fastify) => {
             break;
           case "response.done":
             console.log(
+              `Transcript: ${message.response.output[0].content[0].transcript}`
+            );
+            /*console.log(
               `Response when conversation ends: ${JSON.stringify(
                 message,
                 null,
                 2
               )}`
-            );
+            );*/
             break;
         }
       } catch (error) {
@@ -454,6 +457,9 @@ fastify.register(async (fastify) => {
             if (markQueue.length > 0) {
               markQueue.shift();
             }
+            break;
+          case "stop":
+            console.log("Received completed:", data.event);
             break;
           default:
             console.log("Received non-media event:", data.event);
