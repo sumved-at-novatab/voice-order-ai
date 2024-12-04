@@ -7,6 +7,8 @@ import fastifyWs from "@fastify/websocket";
 // Load environment variables from .env file
 dotenv.config();
 
+import { SYSTEM_MESSAGE } from "./constants";
+
 // Retrieve the OpenAI API key from environment variables.
 const { OPENAI_API_KEY } = process.env;
 
@@ -20,7 +22,6 @@ const fastify = Fastify();
 fastify.register(fastifyFormBody);
 fastify.register(fastifyWs);
 
-const { SYSTEM_MESSAGE } = require("./constants");
 const VOICE = "alloy";
 const PORT = process.env.PORT || 10000; // Allow dynamic port assignment
 
