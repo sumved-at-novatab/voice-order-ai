@@ -200,6 +200,7 @@ const PORT = process.env.PORT || 10000; // Allow dynamic port assignment
 // List of Event Types to log to the console. See the OpenAI Realtime API Documentation: https://platform.openai.com/docs/api-reference/realtime
 const LOG_EVENT_TYPES = [
   "error",
+  "response.audio_transcript.done",
   "response.content.done",
   "rate_limits.updated",
   "response.done",
@@ -362,40 +363,45 @@ fastify.register(async (fastify) => {
     // Listen for messages from the OpenAI WebSocket (and send to Twilio if necessary)
     openAiWs.on("message", (data) => {
       try {
-        const response = JSON.parse(data);
+        const message = JSON.parse(data);
+        const eventType = message.type;
 
-        if (LOG_EVENT_TYPES.includes(response.type)) {
-          console.log(`Received event: ${response.type}`, response);
+        if (LOG_EVENT_TYPES.includes(eventType)) {
+          console.log(`Received event: ${eventType}`, message);
         }
 
-        if (response.type === "response.audio.delta" && response.delta) {
-          const audioDelta = {
-            event: "media",
-            streamSid: streamSid,
-            media: {
-              payload: Buffer.from(response.delta, "base64").toString("base64"),
-            },
-          };
-          connection.send(JSON.stringify(audioDelta));
+        switch (message.type) {
+          case "response.audio.delta":
+            const audioDelta = {
+              event: "media",
+              streamSid: streamSid,
+              media: {
+                payload: Buffer.from(message.delta, "base64").toString(
+                  "base64"
+                ),
+              },
+            };
+            connection.send(JSON.stringify(audioDelta));
 
-          // First delta from a new response starts the elapsed time counter
-          if (!responseStartTimestampTwilio) {
-            responseStartTimestampTwilio = latestMediaTimestamp;
-            if (SHOW_TIMING_MATH)
-              console.log(
-                `Setting start timestamp for new response: ${responseStartTimestampTwilio}ms`
-              );
-          }
-
-          if (response.item_id) {
-            lastAssistantItem = response.item_id;
-          }
-
-          sendMark(connection, streamSid);
-        }
-
-        if (response.type === "input_audio_buffer.speech_started") {
-          handleSpeechStartedEvent();
+            // First delta from a new response starts the elapsed time counter
+            if (!responseStartTimestampTwilio) {
+              responseStartTimestampTwilio = latestMediaTimestamp;
+              if (SHOW_TIMING_MATH)
+                console.log(
+                  `Setting start timestamp for new response: ${responseStartTimestampTwilio}ms`
+                );
+            }
+            if (message.item_id) {
+              lastAssistantItem = message.item_id;
+            }
+            sendMark(connection, streamSid);
+            break;
+          case "input_audio_buffer.speech_started":
+            handleSpeechStartedEvent();
+            break;
+          case "response.audio_transcript.done":
+            console.log(`Audio transcript: ${message.transcript}`);
+            break;
         }
       } catch (error) {
         console.error(
