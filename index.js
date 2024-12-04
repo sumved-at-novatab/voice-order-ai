@@ -94,7 +94,7 @@ fastify.register(async (fastify) => {
           input_audio_format: "g711_ulaw",
           output_audio_format: "g711_ulaw",
           input_audio_transcription: {
-            model: "whisper-1"
+            model: "whisper-1",
           },
           voice: VOICE,
           instructions: SYSTEM_MESSAGE,
@@ -232,9 +232,9 @@ fastify.register(async (fastify) => {
             handleSpeechStartedEvent();
             break;
           case "conversation.item.input_audio_transcription.completed":
-            console.log(
-              `User input transcript: ${message.transcript}`
-            );
+            const { transcript } = message;
+            console.log(`User input transcript: ${transcript}`);
+            transcripts.push(`User: ${transcript}`);
             break;
           /*case "response.audio_transcript.done":
             console.log(`Audio transcription done: ${message.transcript}`);
@@ -248,7 +248,7 @@ fastify.register(async (fastify) => {
             ) {
               const { transcript } = message.response.output[0].content[0];
               console.log(`Server audio transcript: ${transcript}`);
-              transcripts.push(transcript);
+              transcripts.push(`System: ${transcript}`);
             }
             break;
         }
@@ -297,7 +297,7 @@ fastify.register(async (fastify) => {
             break;
           case "stop":
             console.log("Received completed:", data.event);
-            console.log(`Transcripts: ${transcripts}`);
+            console.log(`Full transcripts:\n${transcripts.join("\n")}`);
             break;
           default:
             console.log("Received non-media event:", data.event);
