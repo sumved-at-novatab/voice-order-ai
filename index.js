@@ -93,6 +93,9 @@ fastify.register(async (fastify) => {
           turn_detection: { type: "server_vad" },
           input_audio_format: "g711_ulaw",
           output_audio_format: "g711_ulaw",
+          input_audio_transcription: {
+            model: "whisper-1"
+          },
           voice: VOICE,
           instructions: SYSTEM_MESSAGE,
           modalities: ["text", "audio"],
@@ -230,12 +233,12 @@ fastify.register(async (fastify) => {
             break;
           case "conversation.item.input_audio_transcription.completed":
             console.log(
-              `Conversation transcription completed: ${message.transcript}`
+              `User input transcript: ${message.transcript}`
             );
             break;
-          case "response.audio_transcript.done":
+          /*case "response.audio_transcript.done":
             console.log(`Audio transcription done: ${message.transcript}`);
-            break;
+            break;*/
           case "response.done":
             if (
               message.response.output &&
@@ -244,7 +247,7 @@ fastify.register(async (fastify) => {
               message.response.output[0].content[0]
             ) {
               const { transcript } = message.response.output[0].content[0];
-              console.log(`Transcript: ${transcript}`);
+              console.log(`Server audio transcript: ${transcript}`);
               transcripts.push(transcript);
             }
             break;
