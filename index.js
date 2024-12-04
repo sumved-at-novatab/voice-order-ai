@@ -245,6 +245,7 @@ fastify.register(async (fastify) => {
     let lastAssistantItem = null;
     let markQueue = [];
     let responseStartTimestampTwilio = null;
+    const transcripts = [];
 
     const openAiWs = new WebSocket(
       "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
@@ -408,17 +409,11 @@ fastify.register(async (fastify) => {
               message.response.output[0] &&
               message.response.output[0].content &&
               message.response.output[0].content[0]
-            )
-              console.log(
-                `Transcript: ${message.response.output[0].content[0].transcript}`
-              );
-            /*console.log(
-              `Response when conversation ends: ${JSON.stringify(
-                message.response.output[0],
-                null,
-                2
-              )}`
-            );*/
+            ) {
+              const { transcript } = message.response.output[0].content[0];
+              console.log(`Transcript: ${transcript}`);
+              transcripts.push(transcript);
+            }
             break;
         }
       } catch (error) {
@@ -466,6 +461,7 @@ fastify.register(async (fastify) => {
             break;
           case "stop":
             console.log("Received completed:", data.event);
+            console.log(`Transcripts: ${transcripts}`);
             break;
           default:
             console.log("Received non-media event:", data.event);
