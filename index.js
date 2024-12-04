@@ -299,7 +299,7 @@ fastify.register(async (fastify) => {
           case "stop":
             console.log("Received completed:", data.event);
             console.log(`Full transcripts:\n${transcripts.join("\n")}`);
-            const order = await generateOrder(transcripts);
+            const order = await generateOrder(transcripts.join("\n"));
             console.log("Order:", order);
             break;
           default:
