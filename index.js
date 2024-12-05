@@ -153,11 +153,11 @@ fastify.register(async (fastify) => {
             audio_end_ms: elapsedTime,
           };
           if (SHOW_TIMING_MATH)
-            console.log(
+            /* console.log(
               "Sending truncation event:",
               JSON.stringify(truncateEvent)
-            );
-          openAiWs.send(JSON.stringify(truncateEvent));
+            ); */
+            openAiWs.send(JSON.stringify(truncateEvent));
         }
 
         connection.send(
@@ -197,10 +197,21 @@ fastify.register(async (fastify) => {
     openAiWs.on("message", (data) => {
       try {
         const message = JSON.parse(data);
-        const eventType = message.type;
+        const {
+          type: eventType,
+          event_id: eventId,
+          response_id: responseId,
+          item_id: itemId,
+        } = message;
 
         if (LOG_EVENT_TYPES.includes(eventType)) {
-          console.log(`Received event: ${eventType}`, message);
+          // console.log(`Received event: ${eventType}`, message);
+          console.log(
+            `Event type: ${message.type} `,
+            `Event id: ${eventId} `,
+            `Response id: ${responseId} `,
+            `Item id: ${itemId}`
+          );
         }
 
         switch (message.type) {
@@ -237,9 +248,6 @@ fastify.register(async (fastify) => {
             console.log(`User input transcript: ${transcript}`);
             transcripts.push(`Customer: ${transcript}`);
             break;
-          /*case "response.audio_transcript.done":
-            console.log(`Audio transcription done: ${message.transcript}`);
-            break;*/
           case "response.done":
             if (
               message.response.output &&
@@ -285,7 +293,7 @@ fastify.register(async (fastify) => {
             break;
           case "start":
             streamSid = data.start.streamSid;
-            console.log("Incoming stream has started", streamSid);
+            console.log("Incoming stream has started: ", streamSid);
 
             // Reset start and media timestamp on a new stream
             responseStartTimestampTwilio = null;
@@ -297,10 +305,10 @@ fastify.register(async (fastify) => {
             }
             break;
           case "stop":
-            console.log("Received completed:", data.event);
+            // console.log("Received completed:", data.event);
             console.log(`Full transcripts:\n${transcripts.join("\n")}`);
             const order = await generateOrder(transcripts.join("\n"));
-            console.log("Order:", order);
+            console.log("Order json:", order);
             break;
           default:
             console.log("Received non-media event:", data.event);
