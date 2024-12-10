@@ -38,19 +38,17 @@ export const getRestaurantDetails = async (restaurantRefId) => {
 const getPublishedMenuItems = (data) => {
   return data
     .filter((category) => category.published && !category.markedForDelete)
-    .map((category) => ({
-      categoryName: category.name,
-      menuItems: category.menuItems
+    .map((category) => {
+      const menuItems = category.menuItems
         .filter((item) => item.published && !item.isDeleted)
-        .map((item) => ({
-          name: item.name,
-          description: item.description,
-          dietType: item.dietType,
-          refId: item.refId,
-          price: item.price,
-          currency: item.currency,
-        })),
-    }));
+        .map(
+          (item) =>
+            `  - ${item.name} (${item.dietType}) - $${item.price} ${item.currency}`
+        )
+        .join("\n");
+      return `${category.name}\n${menuItems}`;
+    })
+    .join("\n\n");
 };
 
 export const getRestaurantMenuItems = async (restaurantRefId) => {
