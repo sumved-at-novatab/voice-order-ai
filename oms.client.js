@@ -21,10 +21,10 @@ export const getRestaurantDetails = async (restaurantRefId) => {
       status: response.status,
       message: response.statusText,
     });
-    console.log(
+    /* console.log(
       "getRestaurantDetails: Response json:",
       JSON.stringify(response.data, null, 2)
-    );
+    ); */
     return response.data;
   } catch (error) {
     console.error(

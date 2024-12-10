@@ -9,7 +9,7 @@ dotenv.config();
 
 // import { SYSTEM_MESSAGE } from "./constants.js";
 import { generateOrder } from "./openai.client.js";
-import { getRestaurantDetails } from "./oms.client.js";
+import { getRestaurantDetails, getRestaurantMenuItems } from "./oms.client.js";
 
 // Retrieve the OpenAI API key from environment variables.
 const { OPENAI_API_KEY, RESTAURANT_REF_ID } = process.env;
@@ -73,7 +73,9 @@ fastify.register(async (fastify) => {
     const { name: restaurantName } = await getRestaurantDetails(
       restaurantRefId
     );
+    console.log("Restaurant name:", restaurantName);
     const menuItems = await getRestaurantMenuItems(getRestaurantMenuItems);
+    console.log("Menu items:", JSON.stringify(menuItems, null, 2));
 
     const SYSTEM_MESSAGE = `You are a restaurant's waiter Stephie at ${restaurantName} restaurant.
       Act like a human, but remember that you aren't a human
