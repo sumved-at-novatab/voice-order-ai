@@ -96,6 +96,7 @@ fastify.register(async (fastify) => {
       Finally summarize the order (items and quantity) and the total bill amount to customer.
       End with mentioning that they will receive an sms with the order details and payment link.`;
 
+    console.log("OpenAI system message:", SYSTEM_MESSAGE);
     // Connection-specific state
     let streamSid = null;
     let latestMediaTimestamp = 0;
