@@ -75,7 +75,7 @@ fastify.register(async (fastify) => {
     );
     console.log("Restaurant name:", restaurantName);
     const menuItems = await getRestaurantMenuItems(restaurantRefId);
-    console.log("Menu items:", JSON.stringify(menuItems, null, 2));
+    console.log("Menu items:", menuItems);
 
     const SYSTEM_MESSAGE = `You are a restaurant's waiter Stephie at ${restaurantName} restaurant.
       Act like a human, but remember that you aren't a human

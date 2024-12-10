@@ -70,7 +70,7 @@ export const getRestaurantMenuItems = async (restaurantRefId) => {
     const publishedMenuItems = getPublishedMenuItems(response.data);
     console.log(
       "getRestaurantMenuItems: Published menu items:",
-      JSON.stringify(publishedMenuItems, null, 2)
+      publishedMenuItems
     );
     return publishedMenuItems;
   } catch (error) {
