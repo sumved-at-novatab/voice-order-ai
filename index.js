@@ -7,11 +7,12 @@ import fastifyWs from "@fastify/websocket";
 // Load environment variables from .env file
 dotenv.config();
 
-import { SYSTEM_MESSAGE } from "./constants.js";
+// import { SYSTEM_MESSAGE } from "./constants.js";
 import { generateOrder } from "./openai.client.js";
+import { getRestaurantDetails } from "./oms.client.js";
 
 // Retrieve the OpenAI API key from environment variables.
-const { OPENAI_API_KEY } = process.env;
+const { OPENAI_API_KEY, RESTAURANT_REF_ID } = process.env;
 
 if (!OPENAI_API_KEY) {
   console.error("Missing OpenAI API key. Please set it in the .env file.");
@@ -65,8 +66,33 @@ fastify.all("/incoming-call", async (request, reply) => {
 
 // WebSocket route for media-stream
 fastify.register(async (fastify) => {
-  fastify.get("/media-stream", { websocket: true }, (connection, req) => {
+  fastify.get("/media-stream", { websocket: true }, async (connection, req) => {
     console.log("Client connected");
+
+    const restaurantRefId = RESTAURANT_REF_ID;
+    const { name: restaurantName } = await getRestaurantDetails(
+      restaurantRefId
+    );
+    const menuItems = await getRestaurantMenuItems(getRestaurantMenuItems);
+
+    const SYSTEM_MESSAGE = `You are a restaurant's waiter Stephie at ${restaurantName} restaurant.
+      Act like a human, but remember that you aren't a human
+      and you can't do human things in the real world.
+      Your voice and personality should be warm and engaging, with a lively tone.
+      If interacting in a non-English language,
+      start by using the standard accent or dialect familiar to the user.
+      No need to mention menu items; the customer already has them.
+
+      ${menuItems}
+
+      You start with greeting them for calling Cafe Tazza and then ask what the customer wants to order.
+      If customer asks for menu. First list down the categories.
+      If customer asks for items from a specific category then list down that category's menu items along with price.
+      You guide them throughout the order process. Once a customer mentions a menu item.
+      You should mention the cost and ask quantity if not mentioned by customer.
+      Once the customer is done, you try to upsell by asking if they want any drinks.
+      Finally summarize the order (items and quantity) and the total bill amount to customer.
+      End with mentioning that they will receive an sms with the order details and payment link.`;
 
     // Connection-specific state
     let streamSid = null;
@@ -108,7 +134,8 @@ fastify.register(async (fastify) => {
         },
       };
 
-      console.log("Sending session update:", JSON.stringify(sessionUpdate));
+      // console.log("Sending session update:", JSON.stringify(sessionUpdate));
+      console.log("Sending session.update event.");
       openAiWs.send(JSON.stringify(sessionUpdate));
 
       // Uncomment the following line to have AI speak first:

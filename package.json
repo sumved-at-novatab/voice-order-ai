@@ -14,10 +14,14 @@
   "dependencies": {
     "@fastify/formbody": "^8.0.0",
     "@fastify/websocket": "^11.0.0",
+    "axios": "^1.7.9",
     "dotenv": "^16.4.5",
     "fastify": "^5.0.0",
     "openai": "^4.75.0",
     "ws": "^8.18.0",
     "zod": "^3.23.8"
+  },
+  "overrides": {
+    "whatwg-url": "13.0.0"
   }
 }
