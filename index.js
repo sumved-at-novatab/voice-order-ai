@@ -7,7 +7,6 @@ import fastifyWs from "@fastify/websocket";
 // Load environment variables from .env file
 dotenv.config();
 
-// import { SYSTEM_MESSAGE } from "./constants.js";
 import { generateOrder } from "./openai.client.js";
 import { getRestaurantDetails, getRestaurantMenuItems } from "./oms.client.js";
 
@@ -74,8 +73,10 @@ fastify.register(async (fastify) => {
       restaurantRefId
     );
     console.log("Restaurant name:", restaurantName);
-    const menuItems = await getRestaurantMenuItems(restaurantRefId);
-    console.log("Menu items:", menuItems);
+    const { catalogJson, catalogString } = await getRestaurantMenuItems(
+      restaurantRefId
+    );
+    console.log("Menu items:", catalogString);
 
     const SYSTEM_MESSAGE = `You are a restaurant's waiter Stephie at ${restaurantName} restaurant.
       Act like a human, but remember that you aren't a human
@@ -85,7 +86,7 @@ fastify.register(async (fastify) => {
       start by using the standard accent or dialect familiar to the user.
       No need to mention menu items; the customer already has them.
 
-      ${menuItems}
+      ${catalogString}
 
       You start with greeting them for calling Cafe Tazza and then ask what the customer wants to order.
       If customer asks for menu. First list down the categories.
@@ -122,7 +123,7 @@ fastify.register(async (fastify) => {
         session: {
           turn_detection: {
             type: "server_vad",
-            threshold: 0.4, // A higher threshold will require louder audio to activate the model.
+            threshold: 0.3, // A higher threshold will require louder audio to activate the model.
             silence_duration_ms: 1000, // Duration of silence to detect speech stop (in milliseconds).
           },
           input_audio_format: "g711_ulaw",
@@ -341,7 +342,10 @@ fastify.register(async (fastify) => {
           case "stop":
             // console.log("Received completed:", data.event);
             console.log(`Full transcripts:\n${transcripts.join("\n")}`);
-            const order = await generateOrder(transcripts.join("\n"));
+            const order = await generateOrder(
+              transcripts.join("\n"),
+              catalogJson
+            );
             console.log("Order json:", order);
             break;
           default:

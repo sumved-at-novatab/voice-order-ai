@@ -36,19 +36,40 @@ export const getRestaurantDetails = async (restaurantRefId) => {
 };
 
 const getPublishedMenuItems = (data) => {
-  return data
+  const catalogJson = data
     .filter((category) => category.published && !category.markedForDelete)
+    .map((category) => ({
+      categoryName: category.name,
+      menuItems: category.menuItems
+        .filter((item) => item.published && !item.isDeleted)
+        .map((item) => ({
+          name: item.name,
+          description: item.description,
+          dietType: item.dietType,
+          refId: item.refId,
+          price: item.price,
+          currency: item.currency,
+        })),
+    }));
+
+  // Create a physical catalog presentation
+  const catalogString = catalogJson
     .map((category) => {
       const menuItems = category.menuItems
-        .filter((item) => item.published && !item.isDeleted)
         .map(
           (item) =>
             `  - ${item.name} (${item.dietType}) - $${item.price} ${item.currency}`
         )
         .join("\n");
-      return `${category.name}\n${menuItems}`;
+      return `${category.categoryName}\n${menuItems}`;
     })
     .join("\n\n");
+
+  // Return both formats
+  return {
+    catalogJson,
+    catalogString,
+  };
 };
 
 export const getRestaurantMenuItems = async (restaurantRefId) => {
@@ -67,12 +88,9 @@ export const getRestaurantMenuItems = async (restaurantRefId) => {
       status: response.status,
       message: response.statusText,
     });
-    const publishedMenuItems = getPublishedMenuItems(response.data);
-    console.log(
-      "getRestaurantMenuItems: Published menu items:",
-      publishedMenuItems
-    );
-    return publishedMenuItems;
+    const { catalogJson, catalogString } = getPublishedMenuItems(response.data);
+    console.log("getRestaurantMenuItems: Published menu items:", catalogString);
+    return { catalogJson, catalogString };
   } catch (error) {
     console.error(
       `getRestaurantMenuItems: Error fetching restaurant menu items: ${error.message}`,
