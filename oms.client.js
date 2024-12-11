@@ -117,7 +117,7 @@ export const createTakeawayOrder = async (order) => {
   console.log("Create order request json:", JSON.stringify(data, null, 2));
   try {
     const response = await axios.post(url, data, headers);
-    if (response.status !== HttpStatusCode.Ok) {
+    if (response.status !== HttpStatusCode.Created) {
       throw new Error(response.status + ": " + response.statusText);
     }
     console.log("createTakeawayOrder: Response:", {
