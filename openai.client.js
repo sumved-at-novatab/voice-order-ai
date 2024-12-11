@@ -10,15 +10,14 @@ const { OPENAI_API_KEY } = process.env;
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 const OrderItem = z.object({
-  id: z.string(),
+  menuRefId: z.string(),
   item: z.string(),
   quantity: z.number(),
-  cost: z.number(),
+  price: z.number(),
 });
 
 const Order = z.object({
   items: z.array(OrderItem),
-  total_bill_amount: z.number(),
 });
 
 export const generateOrder = async (transcripts, menuItems) => {

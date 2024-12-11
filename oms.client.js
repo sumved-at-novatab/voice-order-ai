@@ -99,3 +99,41 @@ export const getRestaurantMenuItems = async (restaurantRefId) => {
     throw new Error(error.message);
   }
 };
+
+export const createTakeawayOrder = async (orderItems) => {
+  const url = `${baseUri}/user-order-microservice/orders-on-phone`;
+  const headers = {
+    "x-api-key": apiKey,
+    "Content-Type": "application/json",
+  };
+  const { RESTAURANT_REF_ID } = process.env;
+  const data = {
+    restaurantRefId: RESTAURANT_REF_ID,
+    PaymentMode: "Restaurant",
+    currency: "USD",
+    orderMedium: "organic",
+    menuItems: orderItems
+  };
+  console.log("Create order request json:", JSON.stringify(data, null, 2));
+  try {
+    const response = await axios.post(url, data, headers);
+    if (response.status !== HttpStatusCode.Ok) {
+      throw new Error(response.status + ": " + response.statusText);
+    }
+    console.log("createTakeawayOrder: Response:", {
+      status: response.status,
+      message: response.statusText,
+    });
+    /*console.log(
+      "createTakeawayOrder: Response json:",
+      JSON.stringify(response.data, null, 2)
+    );*/
+    return response.data;
+  } catch (error) {
+    console.error(
+      `createTakeawayOrder: Error creating order: ${error.message}`,
+      error
+    );
+    throw new Error(error.message);
+  }
+};

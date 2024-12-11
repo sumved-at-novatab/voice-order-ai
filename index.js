@@ -8,7 +8,11 @@ import fastifyWs from "@fastify/websocket";
 dotenv.config();
 
 import { generateOrder } from "./openai.client.js";
-import { getRestaurantDetails, getRestaurantMenuItems } from "./oms.client.js";
+import {
+  createTakeawayOrder,
+  getRestaurantDetails,
+  getRestaurantMenuItems,
+} from "./oms.client.js";
 
 // Retrieve the OpenAI API key from environment variables.
 const { OPENAI_API_KEY, RESTAURANT_REF_ID } = process.env;
@@ -347,6 +351,8 @@ fastify.register(async (fastify) => {
               catalogJson
             );
             console.log("Order json:", order);
+            const response = await createTakeawayOrder(order);
+            console.log("Create order response json:", response);
             break;
           default:
             console.log("Received non-media event:", data.event);
