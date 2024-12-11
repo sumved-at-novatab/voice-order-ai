@@ -100,7 +100,7 @@ export const getRestaurantMenuItems = async (restaurantRefId) => {
   }
 };
 
-export const createTakeawayOrder = async (orderItems) => {
+export const createTakeawayOrder = async (order) => {
   const url = `${baseUri}/user-order-microservice/orders-on-phone`;
   const headers = {
     "x-api-key": apiKey,
@@ -112,7 +112,7 @@ export const createTakeawayOrder = async (orderItems) => {
     PaymentMode: "Restaurant",
     currency: "USD",
     orderMedium: "organic",
-    menuItems: orderItems
+    menuItems: order.items,
   };
   console.log("Create order request json:", JSON.stringify(data, null, 2));
   try {
