@@ -14,6 +14,7 @@ const OrderItem = z.object({
   item: z.string().describe("The name of the menu item."),
   quantity: z.number().describe("The quantity of the item ordered."),
   price: z.number().describe("Price per item."),
+  modifiers: z.array(z.any()).length(0).describe("An array that must always be empty."),
 });
 
 const Order = z.object({
