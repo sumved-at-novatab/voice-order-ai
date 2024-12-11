@@ -351,8 +351,9 @@ fastify.register(async (fastify) => {
               catalogJson
             );
             console.log("Order json:", order);
-            const response = await createTakeawayOrder(order);
-            console.log("Create order response json:", response);
+            await createTakeawayOrder(order);
+            // const response = await createTakeawayOrder(order);
+            // console.log("Create order response json:", response);
             break;
           default:
             console.log("Received non-media event:", data.event);
