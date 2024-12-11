@@ -10,10 +10,10 @@ const { OPENAI_API_KEY } = process.env;
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 const OrderItem = z.object({
-  menuRefId: z.string(),
-  item: z.string(),
-  quantity: z.number(),
-  price: z.number(),
+  menuRefId: z.string().describe("The unique reference ID for the menu item."),
+  item: z.string().describe("The name of the menu item."),
+  quantity: z.number().describe("The quantity of the item ordered."),
+  price: z.number().describe("Price per item."),
 });
 
 const Order = z.object({
@@ -24,6 +24,7 @@ export const generateOrder = async (transcripts, menuItems) => {
   const ORDER_SYSTEM_MESSAGE = `You are a helpful assistant.
     Here is an audio transcript between the customer and the restaurant customer care.
     Below is the restaurant menu items json for your reference to pick the id of each of the items.
+    Please remember price in the schema is price per item.
     ${JSON.stringify(menuItems)}`;
   const completion = await openai.beta.chat.completions.parse({
     model: "gpt-4o",
