@@ -73,14 +73,14 @@ fastify.register(async (fastify) => {
     console.log("Client connected");
 
     const restaurantRefId = RESTAURANT_REF_ID;
-    /*const { name: restaurantName } = await getRestaurantDetails(
+    const { name: restaurantName } = await getRestaurantDetails(
       restaurantRefId
     );
     console.log("Restaurant name:", restaurantName);
     const { catalogJson, catalogString } = await getRestaurantMenuItems(
       restaurantRefId
     );
-    console.log("Menu items:", catalogString);*/
+    console.log("Menu items:", catalogString);
 
     const SYSTEM_MESSAGE = `You are a restaurant's waiter Stephie at Happy Meals restaurant.
       Act like a human, but remember that you aren't a human
@@ -172,8 +172,8 @@ fastify.register(async (fastify) => {
         session: {
           turn_detection: {
             type: "server_vad",
-            // threshold: 0.3, // A higher threshold will require louder audio to activate the model.
-            // silence_duration_ms: 1000, // Duration of silence to detect speech stop (in milliseconds).
+            threshold: 0.3, // A higher threshold will require louder audio to activate the model.
+            silence_duration_ms: 1000, // Duration of silence to detect speech stop (in milliseconds).
           },
           input_audio_format: "g711_ulaw",
           output_audio_format: "g711_ulaw",
