@@ -127,14 +127,14 @@ fastify.register(async (fastify) => {
         session: {
           turn_detection: {
             type: "server_vad",
-            threshold: 0.3, // A higher threshold will require louder audio to activate the model.
-            silence_duration_ms: 1000, // Duration of silence to detect speech stop (in milliseconds).
+            // threshold: 0.3, // A higher threshold will require louder audio to activate the model.
+            // silence_duration_ms: 1000, // Duration of silence to detect speech stop (in milliseconds).
           },
           input_audio_format: "g711_ulaw",
           output_audio_format: "g711_ulaw",
-          input_audio_transcription: {
+          /*input_audio_transcription: {
             model: "whisper-1",
-          },
+          },*/
           voice: VOICE,
           instructions: SYSTEM_MESSAGE,
           modalities: ["text", "audio"],
