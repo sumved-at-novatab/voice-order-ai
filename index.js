@@ -72,16 +72,6 @@ fastify.register(async (fastify) => {
   fastify.get("/media-stream", { websocket: true }, async (connection, req) => {
     console.log("Client connected");
 
-    const restaurantRefId = RESTAURANT_REF_ID;
-    const { name: restaurantName } = await getRestaurantDetails(
-      restaurantRefId
-    );
-    console.log("Restaurant name:", restaurantName);
-    const { catalogJson, catalogString } = await getRestaurantMenuItems(
-      restaurantRefId
-    );
-    console.log("Menu items:", catalogString);
-
     const SYSTEM_MESSAGE = `You are a restaurant's waiter Stephie at Happy Meals restaurant.
       Act like a human, but remember that you aren't a human
       and you can't do human things in the real world.
@@ -391,6 +381,15 @@ fastify.register(async (fastify) => {
           case "stop":
             // console.log("Received completed:", data.event);
             console.log(`Full transcripts:\n${transcripts.join("\n")}`);
+            // const restaurantRefId = RESTAURANT_REF_ID;
+            const { name: restaurantName } = await getRestaurantDetails(
+              RESTAURANT_REF_ID
+            );
+            console.log("Restaurant name:", restaurantName);
+            const { catalogJson, catalogString } = await getRestaurantMenuItems(
+              RESTAURANT_REF_ID
+            );
+            console.log("Menu items:", catalogString);
             const order = await generateOrder(
               transcripts.join("\n"),
               catalogJson
